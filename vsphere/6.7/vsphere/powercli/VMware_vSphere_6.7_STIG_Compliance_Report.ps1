@@ -117,6 +117,7 @@ $stigsettings = @{
     vmMks3D                 = @{"mks.enable3d" = $false}
     ## vCenter
     vcLogLevel              = @{"config.log.level" = "info"}
+    vcSyslogdRemoteFailure  = @{"esx.problem.vmsyslogd.remote.failure" = $true}
 }
 
 ##### Enable or Disable specific STIG Remediations #####
@@ -243,10 +244,73 @@ $V94753 = $true  #
 $V94755 = $true  #
 $V94781 = $true  #log level
 
+$V243072 = $false	#vCenter Server must prohibit password reuse. VCTR-67-000001
+$V243073 = $false	#vCenter Server must not automatically refresh client sessions VCTR-67-000002
+$V243074 = $false	#vCenter Server must enforce a 60-day maximum password VCTR-67-000003
+$V243075 = $false	#vCenter Server must terminate management sessions after 10 minutes of inactivity VCTR-67-000004
+$V243076 = $false	#vCenter Server users must have the correct roles assigned VCTR-67-000005
+$V243077 = $false	#vCenter Server must manage excess capacity VCTR-67-000007
+$V243078 = $false	#VCTR-67-000008
+$V243079 = $false	#VCTR-67-000009
+$V243080 = $false	#VCTR-67-000010
+$V243081 = $false	#VCTR-67-000012
+$V243082 = $false	#VCTR-67-000013
+$V243083 = $false	#VCTR-67-000014
+$V243084 = $false	#VCTR-67-000015
+$V243085 = $false	#VCTR-67-000016
+$V243086 = $false	#VCTR-67-000018
+$V243087 = $false	#VCTR-67-000019
+$V243088 = $false	#VCTR-67-000020
+$V243089 = $false	#VCTR-67-000023
+$V243090 = $false	#VCTR-67-000024
+$V243091 = $false	#VCTR-67-000025
+$V243092 = $false	#VCTR-67-000026
+$V243093 = $false	#VCTR-67-000029
+$V243094 = $false	#VCTR-67-000031
+$V243095 = $false	#VCTR-67-000033
+$V243096 = $false	#VCTR-67-000034
+$V243097 = $false	#VCTR-67-000035
+$V243098 = $false	#VCTR-67-000036
+$V243099 = $false	#VCTR-67-000039
+$V243100 = $false	#VCTR-67-000040
+$V243101 = $false	#VCTR-67-000041
+$V243102 = $false	#VCTR-67-000042
+$V243103 = $false	#VCTR-67-000043
+$V243104 = $false	#VCTR-67-000045
+$V243105 = $false	#VCTR-67-000046
+$V243106 = $false	#VCTR-67-000047
+$V243107 = $false	#VCTR-67-000051
+$V243108 = $false	#VCTR-67-000052
+$V243109 = $false	#VCTR-67-000053
+$V243110 = $false	#VCTR-67-000054
+$V243111 = $false	#VCTR-67-000055
+$V243112 = $false	#VCTR-67-000057
+$V243113 = $false	#VCTR-67-000058
+$V243114 = $false	#VCTR-67-000059
+$V243115 = $false	#VCTR-67-000060
+$V243116 = $false	#VCTR-67-000061
+$V243117 = $false	#VCTR-67-000062
+$V243118 = $false	#VCTR-67-000063
+$V243119 = $false	#VCTR-67-000064
+$V243120 = $false	#VCTR-67-000065
+$V243121 = $false	#VCTR-67-000066
+$V243122 = $false	#VCTR-67-000067
+$V243123 = $false	#VCTR-67-000068
+$V243124 = $false	#VCTR-67-000069
+$V243125 = $false	#VCTR-67-000070
+$V243126 = $false	#VCTR-67-000071
+$V243127 = $false	#VCTR-67-000072
+$V243128 = $false	#VCTR-67-000073
+$V243129 = $false	#VCTR-67-000074
+$V243130 = $false	#VCTR-67-000075
+$V243131 = $false	#VCTR-67-000076
+$V243132 = $false	#VCTR-67-000077
+$V243133 = $false	#VCTR-67-000078
+
 
 
 #Modules needed to run script and load
-$modules = @("VMware.PowerCLI","ReportHTML")
+$modules = @("VMware.PowerCLI","VMware.vSphere.SsoAdmin","ReportHTML")
 
 #Check for correct modules
 Function checkModule ($m){
@@ -5567,13 +5631,13 @@ Catch{
     Exit -1
 }
 
-## VCWN-65-000007
+## VCWN-67-000007
 Try{
-    $VULID = "V-94727"
-    $STIGID = "VCWN-65-000007"
+    $VULID = "V-243077"
+    $STIGID = "VCWN-67-000007"
     $Title = "The vCenter Server for Windows must manage excess capacity, bandwidth, or other redundancy to limit the effects of information-flooding types of Denial of Service (DoS) attacks by enabling Network I/O Control (NIOC)."
     $Severity = "CAT II"
-    If($V94727){
+    If($V243077){
         $vctitle07 = "Vulnerability ID:$VULID STIG ID:$STIGID Severity:$Severity Title: $Title"
         Write-ToConsole "...Checking STIG Control with Vulnerability ID:$VULID STIG ID:$STIGID Severity:$Severity with Title: $Title"
         $vcarray = @()
@@ -5602,6 +5666,65 @@ Try{
             }
         }
         $vcarray07 = Set-TableRowColor -ArrayOfObjects $vcarray -Red '$this.Compliant -eq $false' | Sort-Object -Property @{Expression = {$_.RowColor}; Ascending = $false},Name
+        $vcarrayall += $vcarray
+    }
+    Else{
+        Write-ToConsoleRed "...Skipping disabled control with Vulnerability ID:$VULID STIG ID:$STIGID Severity:$Severity with Title: $Title"
+    }
+}
+Catch{
+    Write-Error "Failed to check control with Vulnerability ID:$VULID STIG ID:$STIGID Severity:$Severity with Title: $Title on $($vcenter)"
+    Write-Error $_.Exception
+    Write-ToConsole "...Disconnecting from vCenter Server $vcenter"
+    Disconnect-VIServer -Server $vcenter -Force -Confirm:$false
+    Exit -1
+}
+
+## VCWN-67-000008
+Try{
+    $VULID = "V-243078"
+    $STIGID = "VCWN-67-000008"
+    $Title = "The vCenter Server must produce audit records containing information to establish what type of events occurred."
+    $Severity = "CAT II"
+    If($V243078){
+        $vctitle08 = "Vulnerability ID:$VULID STIG ID:$STIGID Severity:$Severity Title: $Title"
+        Write-ToConsole "...Checking STIG Control with Vulnerability ID:$VULID STIG ID:$STIGID Severity:$Severity with Title: $Title"
+        $vcarray = @()
+        $settingname = [string]$stigsettings.vcSyslogdRemoteFailure.keys
+        $settingvalue = [string]$stigsettings.vcSyslogdRemoteFailure.values
+        #$currentsetting = Get-AdvancedSetting -Entity $vcenter -Name $settingname
+        $currentsetting = Get-AlarmDefinition | Where {$_.ExtensionData.Info.Expression.Expression.EventTypeId -eq $settingname} | Select Name,Enabled,@{N="EventTypeId";E={$_.ExtensionData.Info.Expression.Expression.EventTypeId}}
+        If($currentsetting){
+            If($currentsetting.value -ne $settingvalue){
+                $vcarray += New-Object PSObject -Property ([ordered]@{
+                    "Name" = $vcenter
+                    "Setting" = $settingname
+                    "Value" = $currentsetting.Enabled
+                    "Expected" = $settingvalue
+                    "Severity" = $Severity
+                    "Compliant" = $false
+                })
+            }Else{
+                $vcarray += New-Object PSObject -Property ([ordered]@{
+                    "Name" = $vcenter
+                    "Setting" = $settingname
+                    "Value" = $currentsetting.Enabled
+                    "Expected" = $settingvalue
+                    "Severity" = $Severity
+                    "Compliant" = $true
+                })
+            }
+        }Else{
+            $vcarray += New-Object PSObject -Property ([ordered]@{
+                "Name" = $vcenter
+                "Setting" = $settingname
+                "Value" = "Setting does not exist!"
+                "Expected" = $settingvalue
+                "Severity" = $Severity
+                "Compliant" = $false
+            })
+        }
+        $vcarray08 = Set-TableRowColor -ArrayOfObjects $vcarray -Red '$this.Compliant -eq $false' | Sort-Object -Property @{Expression = {$_.RowColor}; Ascending = $false},Name
         $vcarrayall += $vcarray
     }
     Else{
